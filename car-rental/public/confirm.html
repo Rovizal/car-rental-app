@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        nav {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: blue;
+        }
+
+        .card {
+            padding: 20px;
+            border: 1px solid #ccc;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html">Car List</a>
+        <a href="book.html">Book a Car</a>
+    </nav>
+
+    <h2>Booking Confirmation</h2>
+
+    <div class="card" id="confirmationBox">
+        Loading booking details...
+    </div>
+
+    <script>
+        const data = JSON.parse(localStorage.getItem('bookingData'));
+
+        if (data) {
+            document.getElementById('confirmationBox').innerHTML = `
+            <p><strong>Booking Successful!</strong></p>
+            <p>Car: ${data.car?.brand} ${data.car?.name}</p>
+            <p>From: ${data.start_date}</p>
+            <p>To: ${data.end_date}</p>
+            <p>Total Price: Rp ${parseInt(data.total_price).toLocaleString('id-ID')}</p>
+        `;
+            localStorage.removeItem('bookingData');
+        } else {
+            document.getElementById('confirmationBox').innerText = 'No booking data found.';
+        }
+    </script>
+
+</body>
+
+</html>

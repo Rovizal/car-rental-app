@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Available Cars</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+        }
+
+        .status-available {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-booked {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">Car Rental</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Car List</a></li>
+                    <li class="nav-item"><a class="nav-link" href="book.html">Book a Car</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h2 class="mb-4">Available Cars</h2>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Brand</label>
+                        <select class="form-select" id="brandFilter">
+                            <option value="">All</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Ford">Ford</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Mercedes">Mercedes</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Kia">Kia</option>
+                            <option value="Volkswagen">Volkswagen</option>
+                            <option value="Mazda">Mazda</option>
+                            <option value="Chevrolet">Chevrolet</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Price (Rp)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="minPriceFormatted" placeholder="Min">
+                            <span class="input-group-text">-</span>
+                            <input type="text" class="form-control" id="maxPriceFormatted" placeholder="Max">
+                        </div>
+                        <input type="hidden" id="minPrice">
+                        <input type="hidden" id="maxPrice">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All</option>
+                            <option value="available">Available</option>
+                            <option value="booked">Booked</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-primary" id="applyFilter">Apply Filter</button>
+                    <button class="btn btn-secondary" id="resetFilter">Reset Filter</button>
+                </div>
+            </div>
+        </div>
+
+        <table id="carsTable" class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Price / Day</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        let table;
+
+        function loadTable() {
+            if (table) {
+                table.destroy();
+                $('#carsTable tbody').empty();
+            }
+
+            table = $('#carsTable').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '/api/cars',
+                    type: 'GET',
+                    data: function (d) {
+                        d.brand = $('#brandFilter').val();
+                        d.min_price = $('#minPrice').val();
+                        d.max_price = $('#maxPrice').val();
+                        d.availability_status = $('#statusFilter').val();
+                    }
+                },
+                columns: [
+                    { data: 'name' },
+                    { data: 'brand' },
+                    {
+                        data: 'price_per_day',
+                        render: function (data) {
+                            return 'Rp ' + parseInt(data).toLocaleString('id-ID');
+                        }
+                    },
+                    {
+                        data: 'availability_status',
+                        render: function (data) {
+                            return data === 'available'
+                                ? '<span class="status-available">Available</span>'
+                                : '<span class="status-booked">Booked</span>';
+                        }
+                    }
+                ]
+            });
+        }
+
+        $(document).ready(function () {
+            loadTable();
+
+            $('#applyFilter').on('click', function () {
+                const filters = {
+                    brand: $('#brandFilter').val(),
+                    min_price: $('#minPrice').val(),
+                    max_price: $('#maxPrice').val(),
+                    availability_status: $('#statusFilter').val()
+                };
+                loadTable(filters);
+            });
+
+            $('#resetFilter').on('click', function () {
+                $('#brandFilter').val('');
+                $('#minPrice').val('');
+                $('#maxPrice').val('');
+                $('#statusFilter').val('');
+                loadTable();
+            });
+        });
+
+        function formatRupiah(angka) {
+            return parseInt(angka).toLocaleString('id-ID');
+        }
+
+        function parseNumber(str) {
+            return parseInt(str.replace(/\D/g, '')) || 0;
+        }
+
+        $('#minPriceFormatted').on('keyup', function () {
+            const raw = parseNumber($(this).val());
+            $(this).val(formatRupiah(raw));
+            $('#minPrice').val(raw);
+        });
+
+        $('#maxPriceFormatted').on('keyup', function () {
+            const raw = parseNumber($(this).val());
+            $(this).val(formatRupiah(raw));
+            $('#maxPrice').val(raw);
+        });
+    </script>
+</body>
+
+</html>
