@@ -5,11 +5,9 @@ Struktur:
 - `/car-rental` → Laravel backend / frontend html+jquery
 - `/car-rental-vue` → Frontend Vue 3 (additional)
 
-Lanjutkan baca instruksi di bawah ini 👇
-
 ---
 
-## 🚀 Fitur Utama
+## Fitur Utama
 
 ### Backend (Laravel 11)
 
@@ -43,7 +41,7 @@ Lanjutkan baca instruksi di bawah ini 👇
 
 ---
 
-## 🧱 Struktur API
+## Struktur API
 
 ### `GET /api/cars`
 
@@ -66,7 +64,7 @@ Lanjutkan baca instruksi di bawah ini 👇
 
 ---
 
-## ⚙️ Setup Lokal
+## Setup Lokal
 
 ### Persyaratan
 
@@ -113,7 +111,7 @@ QUEUE_CONNECTION=redis
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 php artisan test
@@ -125,12 +123,12 @@ php artisan test
 
 ---
 
-## 👤 Author
+## Author
 
 Rovizal — 2025
 
 ---
 
-## 📁 Lisensi
+## Lisensi
 
 Free to use for assessment purpose.
