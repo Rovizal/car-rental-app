@@ -131,4 +131,4 @@ Rovizal — 2025
 
 ## Lisensi
 
-Free to use for assessment purpose.
+Free to use .
