@@ -31,8 +31,10 @@ class CarController extends Controller
                 ]);
             }
 
-            if ($isDatatables && $request->filled('search.value')) {
-                $query->where('name', 'like', '%' . $request->input('search.value') . '%');
+            if ($isDatatables) {
+                if ($request->filled('search.value')) {
+                    $query->where('name', 'like', '%' . $request->input('search.value') . '%');
+                }
             } elseif ($request->filled('search')) {
                 $query->where('name', 'like', '%' . $request->search . '%');
             }
@@ -72,10 +74,10 @@ class CarController extends Controller
 
         if ($isDatatables) {
             return response()->json([
-                'draw' => intval($request->input('draw')),
-                'recordsTotal' => $cached->total(),
-                'recordsFiltered' => $cached->total(),
-                'data' => $cached->items(),
+                'draw'              => intval($request->input('draw')),
+                'recordsTotal'      => $cached->total(),
+                'recordsFiltered'   => $cached->total(),
+                'data'              => $cached->items(),
             ]);
         }
 

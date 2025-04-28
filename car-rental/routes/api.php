@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CarController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingStatusController;
 
@@ -12,3 +13,7 @@ Route::get('/bookings', [BookingController::class, 'index']);
 Route::post('/bookings', [BookingController::class, 'store']);
 Route::patch('/bookings/{booking}/status', [BookingStatusController::class, 'update']);
 Route::get('/users/search', [\App\Http\Controllers\Api\UserController::class, 'search']);
+
+
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/products/deactivate/{id}', [ProductController::class, 'deactivate']);
