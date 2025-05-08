@@ -28,12 +28,19 @@
         </Column>
         <Column header="Action">
             <template #body="{ data }">
-                <button @click="updateStatus(data.id)" :disabled="data.status === 'confirmed'" class="text-xs px-3 py-1 rounded transition" :class="[
-                    data.status === 'confirmed'
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                        : 'bg-green-500 text-white hover:bg-green-600'
-                ]">
-                    {{ data.status === 'confirmed' ? 'Already Confirmed' : 'Mark Confirmed' }}
+                <button @click="updateStatus(data.id)" :disabled="data.status === 'confirmed' || data.status === 'canceled'"
+                    class="text-xs px-3 py-1 rounded transition" :class="[
+                        data.status === 'confirmed' || data.status === 'canceled'
+                            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                    ]">
+                    {{
+                        data.status === 'confirmed'
+                            ? 'Already Confirmed'
+                            : data.status === 'canceled'
+                                ? 'Canceled'
+                                : 'Mark Confirmed'
+                    }}
                 </button>
             </template>
         </Column>
