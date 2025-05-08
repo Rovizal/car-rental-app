@@ -12,22 +12,27 @@ class BookingStatusController extends Controller
     public function update(Request $request, Booking $booking)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,completed,canceled'
+            'status' => 'required|in:confirmed,completed,canceled'
         ]);
 
         $booking->update(['status' => $request->status]);
 
         if (in_array($request->status, ['canceled', 'completed'])) {
             $hasOtherBooking = Booking::where('car_id', $booking->car_id)
-                ->whereIn('status', ['pending', 'confirmed'])
+                ->whereIn('status', ['confirmed'])
                 ->where('id', '!=', $booking->id)
                 ->exists();
 
             if (!$hasOtherBooking && $booking->car) {
                 $booking->car->update(['availability_status' => 'available']);
             }
-        } elseif (in_array($request->status, ['pending', 'confirmed'])) {
+        } elseif ($request->status === 'confirmed') {
             if ($booking->car) {
+                Booking::where('car_id', $booking->car_id)
+                    ->where('status', 'pending')
+                    ->where('id', '!=', $booking->id)
+                    ->update(['status' => 'canceled']);
+
                 $booking->car->update(['availability_status' => 'booked']);
             }
         }

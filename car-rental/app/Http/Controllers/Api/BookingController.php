@@ -49,7 +49,7 @@ class BookingController extends Controller
         $end   = Carbon::parse($data['end_date']);
 
         $carbooked = Booking::where('car_id', $data['car_id'])
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereIn('status', ['confirmed'])
             ->where(function ($query) use ($start, $end) {
                 $query->whereBetween('start_date', [$start, $end])
                     ->orWhereBetween('end_date', [$start, $end])
@@ -83,12 +83,12 @@ class BookingController extends Controller
                 'start_date'  => $start,
                 'end_date'    => $end,
                 'total_price' => $totalPrice,
-                'status'      => 'confirmed',
+                'status'      => 'pending',
             ]);
 
-            if ($car->availability_status !== 'booked') {
-                $car->update(['availability_status' => 'booked']);
-            }
+            // if ($car->availability_status !== 'booked') {
+            //     $car->update(['availability_status' => 'booked']);
+            // }
 
             DB::commit();
 
