@@ -141,7 +141,7 @@ async function loadData() {
     const res = await api.get('/cars/', { params })
     cars.value = res.data.data.map(car => {
         // Menambahkan `is_booked` berdasarkan data yang sudah ada di server
-        car.is_booked = car.is_booked || false; // jika `is_booked` kosong, set ke `false`
+        car.is_booked = !!car.is_booked; // jika `is_booked` kosong, set ke `false`
         return car;
     })
     total.value = res.data.total

@@ -39,10 +39,10 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'user_id'       => 'required|exists:users,id',
-            'car_id'        => 'required|exists:cars,id',
-            'start_date'    => 'required|date|after_or_equal:today',
-            'end_date'      => 'required|date|after:start_date',
+            'user_id'    => 'required|exists:users,id',
+            'car_id'     => 'required|exists:cars,id',
+            'start_date' => ['required', 'date', 'after_or_equal:' . Carbon::today()->toDateString()],
+            'end_date'   => 'required|date|after:start_date',
         ]);
 
         $start  = Carbon::parse($data['start_date']);
@@ -87,6 +87,8 @@ class BookingController extends Controller
                 'total_price'   => $totalPrice,
                 'status'        => 'confirmed',
             ]);
+
+            $car->update(['availability_status' => 'booked']);
 
             DB::commit();
 

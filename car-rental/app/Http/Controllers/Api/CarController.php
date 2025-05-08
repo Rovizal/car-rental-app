@@ -62,7 +62,7 @@ class CarController extends Controller
             // Tambahkan info is_booked untuk PrimeVue
             if (!$isDatatables) {
                 $result->getCollection()->transform(function ($car) {
-                    $car->is_booked = Booking::where('car_id', $car->id)
+                    $car->is_booked = (bool) Booking::where('car_id', $car->id)
                         ->whereIn('status', ['pending', 'booked'])
                         ->exists();
                     return $car;

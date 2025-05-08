@@ -79,15 +79,40 @@ const totalPrice = computed(() => {
 })
 
 const submitBooking = async () => {
-    await api.post('/bookings', {
-        user_id: selectedUser.value?.id,
-        car_id: car.value.id,
-        start_date: startDate.value,
-        end_date: endDate.value,
-        total_price: totalPrice.value
-    });
-    router.push('/confirm-booking');
-}
+    if (!selectedUser.value || !selectedUser.value.id) {
+        alert('Please select a customer.');
+        return;
+    }
+
+    if (!startDate.value || !endDate.value) {
+        alert('Please select start and end dates.');
+        return;
+    }
+
+    try {
+        await api.post('/bookings', {
+            user_id: selectedUser.value.id,
+            car_id: car.value.id,
+            start_date: startDate.value,
+            end_date: endDate.value,
+            // total_price is calculated on backend
+        });
+
+        router.push('/confirm-booking');
+    } catch (error) {
+        if (error.response?.status === 422) {
+            const messages = error.response.data.errors
+                ? Object.values(error.response.data.errors).flat().join('\n')
+                : error.response.data.message;
+
+            alert(`Validation failed:\n${messages}`);
+        } else {
+            alert('Something went wrong. Please try again.');
+            console.error(error);
+        }
+    }
+};
+
 
 const formatRupiah = (value) => {
     if (!value) return 'Rp 0'
