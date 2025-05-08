@@ -1,62 +1,62 @@
 # Car Rental App
 
-Struktur:
+Structure:
 
 - `/car-rental` → Laravel backend / frontend html+jquery
 - `/car-rental-vue` → Frontend Vue 3 (additional)
 
 ---
 
-## Fitur Utama
+## Main Features
 
 ### Backend (Laravel 11)
 
-- Listing mobil dengan server-side filter dan pagination
-- Booking mobil dengan validasi tanggal dan perhitungan harga otomatis
-- Notifikasi email saat status booking berubah (dengan queue dan Redis)
-- Caching mobil tersedia menggunakan Redis
-- Artisan command untuk rekap booking harian
-- API untuk frontend jQuery & Vue.js (terintegrasi)
-- Unit testing dengan PHPUnit
+- Car listings with server-side filtering and pagination
+- Car booking with date validation and automatic price calculation
+- Email notifications when booking status changes (via queue and Redis)
+- Redis-based caching for available cars
+- Artisan command for daily booking summary
+- API integration for both jQuery and Vue.js frontends
+- Unit testing with PHPUnit
 
-### Frontend jQuery (di dalam `/car-rental/public`)
+### Frontend jQuery (inside `/car-rental/public`)
 
-- Tabel mobil dengan DataTables (server-side)
-- Filter brand, harga, dan status
-- Booking form dengan konfirmasi (localStorage)
-- Styling menggunakan Bootstrap 5
-- **Akses melalui:** `http://localhost:8000/index.html`
+- Car table with server-side DataTables
+- Filtering by brand, price range, and availability status
+- Booking form with confirmation feature using `localStorage`
+- Styled using Bootstrap 5
+- **Access via:** `http://localhost:8000/index.html`
 
-### Frontend Vite + Vue 3 _(dikelola terpisah di folder `/car-rental-vue`)_
+### Frontend Vite + Vue 3 _(in separate folder `/car-rental-vue`)_
 
-- Integrasi API untuk list mobil dengan filter dan sorting
-- Komponen reusable dengan PrimeVue DataTable
-- **Jalankan dengan:**
+- API integration to list cars with filters and sorting
+- Reusable components using PrimeVue DataTable
+- **Run with:**
   ```bash
   cd car-rental-vue
   npm install
   npm run dev
   ```
-  Akses melalui: `http://localhost:5173`
+  Access via: `http://localhost:5173`
 
 ---
 
-## Struktur API
+## API Structure
 
 ### `GET /api/cars`
 
-- Untuk jQuery DataTables dan Vue
-- Mendukung: `brand`, `min_price`, `max_price`, `availability_status`, `search`, `page`, `per_page`, `sort_by`, `sort_order`
+- Used for jQuery DataTables and Vue
+- Support: `brand`, `min_price`, `max_price`, `availability_status`, `search`, `page`, `per_page`, `sort_by`, `sort_order`
 
 ### `POST /api/bookings`
 
-- Membuat booking baru
+- Create a new booking
 - Input: `user_id`, `car_id`, `start_date`, `end_date`
 
 ### `PATCH /api/bookings/{booking}/status`
 
-- Update status booking (pending/confirmed/completed/canceled)
-- Trigger notifikasi email via queue
+- Update booking status (pending/confirmed/completed/canceled)
+- Triggers email notification via queue
 
 ### `GET /api/users/search`
 
@@ -64,26 +64,26 @@ Struktur:
 
 ---
 
-## Setup Lokal
+## Local Setup
 
-### Persyaratan
+### Requirements
 
 - PHP 8.3
 - Composer
 - MySQL
 - Redis
-- Node.js (opsional untuk Vue)
+- Node.js (optional for Vue)
 
-### Pembuatan Database
+### Create Databases
 
-Buat dua database secara manual sebelum menjalankan migrasi:
+Manually create the following databases before running migrations:
 
 ```sql
 CREATE DATABASE car_rental;
 CREATE DATABASE car_rental_test;
 ```
 
-### Langkah Instalasi Backend
+### Backend Installation Steps
 
 ```bash
 cd car-rental
@@ -102,7 +102,7 @@ php artisan queue:work
 
 ### Redis
 
-Pastikan Redis aktif dan `.env`:
+Ensure Redis is running and your .env file contains:
 
 ```env
 CACHE_DRIVER=redis
@@ -117,9 +117,9 @@ QUEUE_CONNECTION=redis
 php artisan test
 ```
 
-- Booking: validasi, tumpang tindih, response
-- Booking summary command
-- Notifikasi email (mocked)
+- Booking: validations, conflict checking, and API response
+- Daily booking summary command
+- Email notification (mocked/tested)
 
 ---
 
