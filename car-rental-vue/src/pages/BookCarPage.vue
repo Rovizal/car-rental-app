@@ -41,9 +41,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../services/api'
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import api from '../services/api';
 
 const today = new Date().toISOString().split('T')[0]
 const route = useRoute()
@@ -65,8 +65,9 @@ async function searchUsers(event) {
 
 
 onMounted(async () => {
-    const res = await api.get(`/cars/${route.params.id}`)
-    car.value = res.data
+    const res = await api.get(`/cars/${route.params.id}`);
+    car.value = res.data.car;
+
 })
 
 const totalPrice = computed(() => {
@@ -95,5 +96,6 @@ const formatRupiah = (value) => {
         currency: 'IDR',
         minimumFractionDigits: 0
     }).format(value)
-}
+};
+
 </script>
