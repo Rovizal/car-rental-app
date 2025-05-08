@@ -45,8 +45,8 @@ class BookingController extends Controller
             'end_date'   => 'required|date|after:start_date',
         ]);
 
-        $start  = Carbon::parse($data['start_date']);
-        $end    = Carbon::parse($data['end_date']);
+        $start = Carbon::parse($data['start_date']);
+        $end   = Carbon::parse($data['end_date']);
 
         $carbooked = Booking::where('car_id', $data['car_id'])
             ->whereIn('status', ['pending', 'confirmed'])
@@ -67,28 +67,28 @@ class BookingController extends Controller
         DB::beginTransaction();
 
         try {
-            $car    = Car::find($data['car_id']);
+            $car = Car::find($data['car_id']);
 
             if (!$car) {
                 DB::rollBack();
-                return response()->json([
-                    'message' => 'No Car found!'
-                ], 400);
+                return response()->json(['message' => 'No Car found!'], 400);
             }
 
             $duration   = $start->diffInDays($end);
             $totalPrice = $car->price_per_day * $duration;
 
             $booking = Booking::create([
-                'user_id'       => $data['user_id'],
-                'car_id'        => $data['car_id'],
-                'start_date'    => $start,
-                'end_date'      => $end,
-                'total_price'   => $totalPrice,
-                'status'        => 'confirmed',
+                'user_id'     => $data['user_id'],
+                'car_id'      => $data['car_id'],
+                'start_date'  => $start,
+                'end_date'    => $end,
+                'total_price' => $totalPrice,
+                'status'      => 'confirmed',
             ]);
 
-            $car->update(['availability_status' => 'booked']);
+            if ($car->availability_status !== 'booked') {
+                $car->update(['availability_status' => 'booked']);
+            }
 
             DB::commit();
 
@@ -99,8 +99,8 @@ class BookingController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json([
-                'message'   => 'Failed to create booking',
-                'error'     => $e->getMessage()
+                'message' => 'Failed to create booking',
+                'error'   => $e->getMessage()
             ], 500);
         }
     }

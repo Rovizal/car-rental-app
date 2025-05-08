@@ -23,14 +23,17 @@ class BookingStatusController extends Controller
                 ->where('id', '!=', $booking->id)
                 ->exists();
 
-            if (!$hasOtherBooking) {
+            if (!$hasOtherBooking && $booking->car) {
                 $booking->car->update(['availability_status' => 'available']);
             }
         } elseif (in_array($request->status, ['pending', 'confirmed'])) {
-            $booking->car->update(['availability_status' => 'booked']);
+            if ($booking->car) {
+                $booking->car->update(['availability_status' => 'booked']);
+            }
         }
 
         $booking->load('user', 'car');
+
         if ($booking->user) {
             $booking->user->notify(new BookingStatusNotification($booking));
         }

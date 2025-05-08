@@ -48,15 +48,14 @@
         <Column header="Action" bodyClass="text-center">
             <template #body="{ data }">
                 <button :class="[
-                    'text-white text-sm px-3 py-1 rounded hover:bg-blue-600 transition',
-                    data.is_booked ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'
-                ]" :disabled="data.is_booked" @click="!data.is_booked && $router.push(`/book/${data.id}`)">
+                    'text-white text-sm px-3 py-1 rounded transition',
+                    data.availability_status === 'booked' ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                ]" :disabled="data.availability_status === 'booked'" @click="handleBooking(data)">
                     Book
                 </button>
             </template>
         </Column>
     </DataTable>
-
 </template>
 
 <script setup>
@@ -83,22 +82,19 @@ const filters = ref({
     search: '',
 })
 
-let searchTimeout = null;
-
-function debounceSearch() {
-    // Batalkan pencarian sebelumnya jika ada
-    clearTimeout(searchTimeout);
-
-    // Menunggu 800ms sebelum memanggil loadData
-    searchTimeout = setTimeout(() => {
-        loadData();
-    }, 800);
-}
-
 const brandList = [
     'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes',
     'Nissan', 'Hyundai', 'Kia', 'Volkswagen', 'Mazda', 'Chevrolet'
 ]
+
+let searchTimeout = null;
+
+function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        loadData();
+    }, 800);
+}
 
 function syncPrice(type) {
     const str = filters.value[`${type}_price_formatted`].replace(/\D/g, '')
@@ -139,15 +135,10 @@ async function loadData() {
     }
 
     const res = await api.get('/cars/', { params })
-    cars.value = res.data.data.map(car => {
-        // Menambahkan `is_booked` berdasarkan data yang sudah ada di server
-        car.is_booked = !!car.is_booked; // jika `is_booked` kosong, set ke `false`
-        return car;
-    })
+    cars.value = res.data.data
     total.value = res.data.total
     loading.value = false
 }
-
 
 function onPage(event) {
     page.value = event.page
@@ -159,6 +150,12 @@ function onSort(event) {
     sortField.value = event.sortField
     sortOrder.value = event.sortOrder
     loadData()
+}
+
+function handleBooking(car) {
+    if (car.availability_status !== 'booked') {
+        window.location.href = `/book/${car.id}`
+    }
 }
 
 onMounted(loadData);
